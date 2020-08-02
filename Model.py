@@ -17,7 +17,7 @@ cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=os.path.join(checkpoin
 l2_alpha = 10e-10  # L2 regression
 
 # conv == size of convolution window in px
-def define_model(conv=2):
+def define_model(conv=250):
     input_img = tf.keras.layers.Input(shape=(1024, 1024, 3))
 
     l1 = tf.keras.layers.Conv2D(256, conv, padding="same", kernel_initializer="he_uniform", activation="relu", activity_regularizer=tf.keras.regularizers.l2(l2_alpha))(input_img)
@@ -42,7 +42,7 @@ def define_model(conv=2):
 
     l15 = tf.keras.layers.add([l14, l2])
 
-    decoded_image = tf.keras.layers.Conv2D(3, conv, padding="same", kernel_initializer="he_uniform", activation="relu", activity_regularizer=tf.keras.regularizers.l2(l2_alpha),)(l15)
+    decoded_image = tf.keras.laeyrs.Conv2D(3, conv, padding="same", kernel_initializer="he_uniform", activation="relu", activity_regularizer=tf.keras.regularizers.l2(l2_alpha),)(l15)
 
     return tf.keras.models.Model(inputs=(input_img), outputs=decoded_image)
 
@@ -64,6 +64,8 @@ for img in hi_files:
 for img in lo_files:
     lo_res_images.append(cv2.imread(f"./Data/Low res/{img}", cv2.IMREAD_UNCHANGED))
 
+print(len(lo_res_images))
+print(len(hi_res_images))
 
 
 # lo_res_images = np.array(lo_res_images, dtype=object)
@@ -72,7 +74,7 @@ for img in lo_files:
 # print(lo_res_images.shape)
 # print(hi_res_images.shape)
 
-model.fit(np.asarray(lo_res_images[:20]), np.asarray(hi_res_images[:20]), epochs=1, batch_size=32, shuffle=True, validation_split=0.15, callbacks=[cp_callback])
+model.fit(np.asarray(lo_res_images[:5]), np.asarray(hi_res_images[:5]), epochs=1, batch_size=32, shuffle=True, validation_split=0.15)
 # model.fit(lo_res_images, hi_res_images, epochs=5, batch_size=32, shuffle=True, validation_split=0.15, callbacks=[cp_callback])
 
 model.save("my_model")

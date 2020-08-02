@@ -3,6 +3,7 @@ import wget
 import cv2
 import urllib.request
 from time import sleep
+from pathlib import Path
 
 #  Set headers to not get 403: Forbidden
 opener = urllib.request.build_opener()
@@ -10,9 +11,10 @@ opener.addheaders = [("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; r
 urllib.request.install_opener(opener)
 image_url = "https://thispersondoesnotexist.com/image"  # 1024x1024
 
+
+
 #  Get n faces to download
-path, dirs, files = next(os.walk("./Data/High res"))
-facecount = len(files)
+facecount = len([file for file in Path("./Data/High res").iterdir()])
 
 command = input("'add' or 'del' ?  ")
 if command == "add":
@@ -30,8 +32,8 @@ if command == "add":
         i += 1
 
 
-    t, t, hi_files = next(os.walk("./Data/High res"))
-    t, t, lo_files = next(os.walk("./Data/Low res"))
+    t, t, hi_files = next(os.walk(Path("./Data/High res")))
+    t, t, lo_files = next(os.walk(Path("./Data/Low res")))
 
     for img in hi_files:
         if img not in lo_files:
