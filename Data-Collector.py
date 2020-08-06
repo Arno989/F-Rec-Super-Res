@@ -11,15 +11,22 @@ opener.addheaders = [("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; r
 urllib.request.install_opener(opener)
 image_url = "https://thispersondoesnotexist.com/image"  # 1024x1024
 
+#  Get n faces to download
+def walkFiles():
+    hi_files = next(os.walk(Path("./Data/High res")))[2]
+    lo_files = next(os.walk(Path("./Data/Low res")))[2]
+    return hi_files, lo_files
+
+
+#  Get n faces in library
+facecount = len([file for file in Path("./Data/High res").iterdir()])
 
 
 #  Get n faces to download
-facecount = len([file for file in Path("./Data/High res").iterdir()])
-
-command = input("'add' or 'del' ?  ")
-if command == "add":
+command = input("Add or delete images? ['A' or 'D']\n")
+if command.lower() == "a":
     try:
-        extrafaces = int(input(f"Currently {facecount} faces available in './Data/High res'. How many more faces to download?  "))
+        extrafaces = int(input(f"Currently {facecount} faces available in './Data/High res'. How many to download?  [int]\n"))
     except Exception as e:
         print(e)
     i = facecount + 1
@@ -31,12 +38,31 @@ if command == "add":
         sleep(1)
         i += 1
 
-
-    t, t, hi_files = next(os.walk(Path("./Data/High res")))
-    t, t, lo_files = next(os.walk(Path("./Data/Low res")))
+    hi_files, lo_files = walkFiles()
 
     for img in hi_files:
         if img not in lo_files:
             cv2.imwrite(f"./Data/Low res/{img}", cv2.resize(cv2.resize(cv2.imread(f"./Data/High res/{img}", cv2.IMREAD_COLOR), (100, 100)), (1024, 1024)))
-elif command == "del":
-    pass
+elif command.lower() == "d":
+    delcmd = input("How many images do you want to purge? ['All' or int]\n")
+    if delcmd.lower() == "all":
+
+        hi_files, lo_files = walkFiles()
+
+        for img in hi_files:
+            os.remove(f"./Data/High res/{img}")
+        for img in lo_files:
+            os.remove(f"./Data/Low res/{img}")
+
+    elif int(delcmd) <= facecount:
+        hi_files, lo_files = walkFiles()
+
+        i = 1
+        while i <= int(delcmd):
+            os.remove(f"./Data/High res/{hi_files[-i]}")
+            os.remove(f"./Data/Low res/{lo_files[-i]}")
+            i += 1
+    else:
+        print("Unvalid input")
+else:
+    print("Unvalid command")
